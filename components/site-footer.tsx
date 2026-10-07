@@ -1,27 +1,54 @@
-import { MessageCircle, Mail } from 'lucide-react'
-import { BopeLogo, LinkedInIcon } from '@/components/brand'
+'use client'
+
+import { useState } from 'react'
+import { MessageCircle, Mail, ArrowRight, Phone, UserPlus } from 'lucide-react'
+import { MapPin } from 'lucide-react'
+import { SrvLogo, LinkedInIcon } from '@/components/brand'
+import { AboutModal } from '@/components/about-modal'
+import {
+  BUSINESS_ADDRESS,
+  BUSINESS_EMAIL,
+  LINKEDIN_PROFILE_URL,
+  MESSAGES,
+  hasLinkedIn,
+  VCARD_FILENAME,
+  VCARD_PATH,
+  hasWhatsApp,
+  leadProps,
+  phoneDisplay,
+  phoneHref,
+} from '@/lib/contact'
 
 export function SiteFooter() {
+  const [aboutOpen, setAboutOpen] = useState(false)
+
   return (
     <footer className="border-t border-border bg-card/40">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-28 pt-14 sm:px-6 sm:pb-14 lg:px-8">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <BopeLogo className="h-14 w-auto" />
+            <button
+              type="button"
+              onClick={() => setAboutOpen(true)}
+              aria-haspopup="dialog"
+              aria-label="Quiénes somos: misión, visión y valores de SRV Security"
+              className="group flex items-center gap-3 rounded-md text-left transition-colors"
+            >
+              <SrvLogo className="h-14 w-auto" />
               <div className="leading-none">
-                <p className="font-sans text-base font-semibold tracking-[0.18em] text-foreground">
-                  BOPE SECURITY
+                <p className="flex items-center gap-1.5 font-sans text-base font-semibold tracking-[0.18em] text-foreground transition-colors group-hover:text-gold">
+                  SRV SECURITY
+                  <ArrowRight className="h-3.5 w-3.5 text-gold transition-transform group-hover:translate-x-1" />
                 </p>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                  Asistencia y Monitoreo GPS
+                  Nuestro Quiénes somos · visión y misión
                 </p>
               </div>
-            </div>
+            </button>
             <p className="mt-5 max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground">
-              Servicios privados de asistencia logística y seguridad en ruta.
-              Monitoreo GPS, escolta preventiva y telemetría táctica para el
-              transporte de carga.
+              Servicios privados de asistencia logística y seguridad en ruta:
+              escolta preventiva, monitoreo GPS y equipos con instalación
+              profesional para el transporte de carga.
             </p>
           </div>
 
@@ -31,9 +58,13 @@ export function SiteFooter() {
             </p>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li><a href="#servicios" className="hover:text-gold">Servicios</a></li>
-              <li><a href="#tecnologia" className="hover:text-gold">Monitoreo GPS</a></li>
+              <li><a href="#equipos" className="hover:text-gold">Equipos GPS</a></li>
+              <li><a href="#tecnologia" className="hover:text-gold">Plataforma</a></li>
               <li><a href="#cobertura" className="hover:text-gold">Cobertura</a></li>
               <li><a href="#contacto" className="hover:text-gold">Contacto</a></li>
+              <li><a href="/arquitectura-legal" className="hover:text-gold">Arquitectura legal</a></li>
+              <li><a href="/privacidad" className="hover:text-gold">Privacidad</a></li>
+              <li><a href="#inicio" className="hover:text-gold">Volver arriba</a></li>
             </ul>
           </div>
 
@@ -42,32 +73,54 @@ export function SiteFooter() {
               Contacto
             </p>
             <div className="mt-4 flex flex-col gap-3 text-sm">
+              {hasWhatsApp && (
+                <a href={phoneHref} className="flex items-center gap-2 text-muted-foreground hover:text-gold">
+                  <Phone className="h-4 w-4 text-gold" />
+                  {phoneDisplay}
+                </a>
+              )}
               <a
-                href="mailto:Bope.Security@gmail.com"
+                href={`mailto:${BUSINESS_EMAIL}`}
                 className="flex items-center gap-2 text-muted-foreground hover:text-gold"
               >
                 <Mail className="h-4 w-4 text-gold" />
-                Bope.Security@gmail.com
+                {BUSINESS_EMAIL}
               </a>
+              <p className="mt-3 flex items-start gap-2 text-muted-foreground">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                <span>{BUSINESS_ADDRESS}</span>
+              </p>
+              {hasWhatsApp && (
+                <a
+                  href={VCARD_PATH}
+                  download={VCARD_FILENAME}
+                  className="mt-1 flex items-center gap-2 text-muted-foreground hover:text-gold"
+                >
+                  <UserPlus className="h-4 w-4 text-gold" />
+                  Guardar contacto
+                </a>
+              )}
               <div className="mt-2 flex gap-3">
-                <a
-                  href="https://www.linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                  className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
-                >
-                  <LinkedInIcon className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://wa.me/56900000000"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="WhatsApp"
-                  className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                </a>
+                {hasLinkedIn && (
+                  <a
+                    href={LINKEDIN_PROFILE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
+                  >
+                    <LinkedInIcon className="h-4 w-4" />
+                  </a>
+                )}
+                {hasWhatsApp && (
+                  <a
+                    {...leadProps(MESSAGES.monitoring)}
+                    aria-label="WhatsApp"
+                    className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -75,15 +128,20 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {new Date().getFullYear()} BOPE SECURITY — Asistencia y Monitoreo
-            GPS. Todos los derechos reservados.
+            © {new Date().getFullYear()} SRV SECURITY — Asistencia y Monitoreo
+            GPS. Todos los derechos reservados.{' '}
+            <a href="/privacidad" className="underline-offset-4 hover:text-gold hover:underline">
+              Privacidad
+            </a>
           </p>
           <p className="max-w-md text-pretty sm:text-right">
             Servicios de asistencia logística y seguridad privada en rutas. No
-            constituye servicio de seguridad pública ni fuerza policial.
+            constituye servicio de seguridad pública ni fuerza policial, ni
+            es un seguro: SRV no cubre el valor del vehículo ni de la carga.
           </p>
         </div>
       </div>
+      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </footer>
   )
 }

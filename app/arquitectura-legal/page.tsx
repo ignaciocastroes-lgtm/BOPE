@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
+  MessageCircle,
   ArrowLeft,
   ArrowRight,
   Scale,
@@ -11,14 +12,16 @@ import {
   Fingerprint,
   Gavel,
 } from 'lucide-react'
-import { BopeLogo } from '@/components/brand'
+import { SrvLogo } from '@/components/brand'
 import { ClauseGenerator } from '@/components/legal/clause-generator'
+import { FloatingContact } from '@/components/floating-contact'
+import { MESSAGES, leadProps } from '@/lib/contact'
 
 export const metadata: Metadata = {
   alternates: { canonical: '/arquitectura-legal' },
-  title: 'Arquitectura Legal y Cumplimiento Normativo | BOPE Fleet Ops',
+  title: 'Arquitectura Legal y Cumplimiento Normativo | SRV Fleet Ops',
   description:
-    'Marco legal y de cumplimiento de BOPE Fleet Ops: evidencia forense (Ley 21.720), protección de datos (Ley 21.719) y uso operativo conforme al Art. 25 bis del Código del Trabajo.',
+    'Marco legal y de cumplimiento de SRV Fleet Ops: evidencia forense (Ley 21.720), protección de datos (Ley 21.719) y uso operativo conforme al Art. 25 bis del Código del Trabajo.',
 }
 
 const pillars = [
@@ -50,28 +53,38 @@ const pillars = [
 
 export default function ArquitecturaLegalPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main id="contenido" className="min-h-screen bg-background">
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <BopeLogo className="h-10 w-auto" />
+            <SrvLogo className="h-10 w-auto" />
             <span className="flex flex-col leading-none">
               <span className="font-sans text-sm font-semibold tracking-[0.18em] text-foreground">
-                BOPE FLEET OPS
+                SRV FLEET OPS
               </span>
               <span className="text-[10px] uppercase tracking-[0.26em] text-muted-foreground">
                 Arquitectura Legal
               </span>
             </span>
           </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium uppercase tracking-widest text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Volver
-          </Link>
+          <div className="flex items-center gap-2">
+            <a
+              {...leadProps(MESSAGES.expert, '/#contacto')}
+              className="hidden items-center gap-2 rounded-md bg-gold px-3 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:gold-glow sm:inline-flex"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Hablar con un experto
+            </a>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-medium uppercase tracking-widest text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Volver al inicio</span>
+              <span className="sm:hidden">Inicio</span>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -94,8 +107,8 @@ export default function ArquitecturaLegalPage() {
             Arquitectura Legal y Cumplimiento Normativo
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            Diseñamos tecnología que protege tus activos físicos y blinda tu
-            responsabilidad penal y laboral en Chile.
+            Diseñamos tecnología para que el monitoreo GPS y la evidencia se
+            ajusten a la normativa penal y laboral en Chile.
           </p>
         </div>
       </section>
@@ -239,6 +252,7 @@ export default function ArquitecturaLegalPage() {
           <ClauseGenerator />
         </div>
       </section>
+      <FloatingContact fallback="/#contacto" alwaysVisible />
     </main>
   )
 }

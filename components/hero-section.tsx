@@ -1,20 +1,23 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Navigation, Signal, Gauge, Radar } from 'lucide-react'
-import { BopeLogo } from '@/components/brand'
+import { ChevronDown, Navigation, Signal, Gauge, Radar } from 'lucide-react'
+import { AboutModal } from '@/components/about-modal'
+import { SrvLogo } from '@/components/brand'
+import { MESSAGES, leadProps, openQuote } from '@/lib/contact'
 
 const telemetry = [
   { icon: Signal, label: 'GPS', value: 'LOCK 97°E' },
-  { icon: Navigation, label: 'Ruta', value: '78 · Autopista del Sol' },
+  { icon: Navigation, label: 'Ruta', value: 'Ruta 5 Sur' },
   { icon: Gauge, label: 'Velocidad', value: '92.9 km/h' },
-  { icon: Radar, label: 'Status', value: 'EN RUTA PROTEGIDA' },
+  { icon: Radar, label: 'Status', value: 'EN RUTA · MONITOREADA' },
 ]
 
 export function HeroSection() {
   const ref = useRef<HTMLDivElement>(null)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -31,7 +34,7 @@ export function HeroSection() {
     <section
       id="inicio"
       ref={ref}
-      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden"
+      className="relative h-[100svh] min-h-[720px] w-full overflow-hidden"
     >
       {/* Background layer */}
       <motion.div
@@ -39,7 +42,7 @@ export function HeroSection() {
         className="absolute inset-0"
       >
         <Image
-          src="/hero-truck.png"
+          src="/hero-truck.webp"
           alt="Camión de carga en autopista al atardecer bajo escolta preventiva"
           fill
           priority
@@ -99,41 +102,65 @@ export function HeroSection() {
           transition={{ duration: 0.7 }}
           className="max-w-2xl"
         >
-          <BopeLogo variant="lg" priority className="mb-5 h-28 w-auto sm:h-36 lg:h-40" />
-          <div className="mb-6 flex items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
-              Fase piloto
-            </span>
-          </div>
+          <button
+            type="button"
+            id="nosotros"
+            onClick={() => setAboutOpen(true)}
+            aria-haspopup="dialog"
+            aria-label="Quiénes somos: misión, visión y valores de SRV Security"
+            className="group -ml-1 mb-4 inline-block rounded-lg p-1 transition-transform hover:scale-[1.03]"
+          >
+            <SrvLogo variant="lg" priority className="h-20 w-auto drop-shadow-[0_0_18px_rgba(212,175,55,0.25)] sm:h-28 lg:h-32" />
+          </button>
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
+            Escolta · Monitoreo GPS · Equipos
+          </span>
 
-          <h1 className="text-balance font-sans text-4xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Blindaje operativo y asistencia en ruta para el{' '}
-            <span className="text-gradient-gold">transporte de carga</span>
+          <h1 className="mt-5 text-balance font-sans text-3xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Cuando tu camión deja de responder,{' '}
+            <span className="text-gradient-gold">¿quién sale a buscarlo?</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Monitoreo GPS, asistencia en ruta y expediente de evidencia para el
-            transporte de carga. Plataforma en fase piloto.
+          <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Nosotros. SRV Security acompaña tu carga en la ruta y sigue tu
+            flota por GPS, con un equipo que responde en terreno y no solo
+            desde una pantalla.
           </p>
 
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-8">
             <a
-              href="#contacto"
-              className="group inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:gold-glow"
+              {...leadProps(MESSAGES.pain)}
+              className="group inline-flex items-center justify-center gap-2.5 rounded-md border border-amber/50 bg-amber/10 px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-widest text-amber backdrop-blur-md transition-colors hover:bg-amber/20"
             >
-              Cotizar Escolta de Carga
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-            <a
-              href="#servicios"
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-background/40 px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-widest text-foreground backdrop-blur-md transition-colors hover:border-gold/50 hover:text-gold"
-            >
-              Ver Servicios
+              <span className="h-2 w-2 animate-pulse rounded-full bg-amber" />
+              Mi camión dejó de reportar
             </a>
           </div>
+
+          <p className="mt-4 max-w-xl text-xs leading-relaxed text-muted-foreground">
+            ¿Buscas un GPS para tu auto?{' '}
+            <button
+              type="button"
+              onClick={() => openQuote()}
+              className="font-medium text-gold underline-offset-4 hover:underline"
+            >
+              Ver catálogo y cotizar
+            </button>
+            . Si hay un delito en curso, llama primero al 133 (Carabineros).
+          </p>
+
+          <a
+            href="#servicios"
+            className="group mt-7 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-gold"
+          >
+            Ver escolta de carga y monitoreo
+            <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+          </a>
         </motion.div>
       </motion.div>
+
+      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </section>
   )
 }

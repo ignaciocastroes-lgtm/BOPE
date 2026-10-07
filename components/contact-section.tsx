@@ -2,7 +2,19 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ArrowRight, MessageCircle, Phone, ShieldCheck, UserPlus } from 'lucide-react'
+import { MapPin } from 'lucide-react'
+import {
+  BUSINESS_ADDRESS,
+  MESSAGES,
+  VCARD_FILENAME,
+  VCARD_PATH,
+  hasWhatsApp,
+  leadProps,
+  phoneDisplay,
+  phoneHref,
+  sendLead,
+} from '@/lib/contact'
 
 const services = [
   'Escolta de Carga',
@@ -11,16 +23,20 @@ const services = [
   'Asesoría de Riesgos',
 ]
 
+// Cobertura nacional: los equipos parten desde estas bases en la zona central
+// hacia cualquier punto del país (no es servicio local en cada región).
+const bases = ['Santiago', 'San Antonio', 'Rancagua']
+
 const fields = [
   { id: 'empresa', label: 'Empresa / Transportista', type: 'text', ph: 'Transportes Ejemplo Ltda.' },
   { id: 'telefono', label: 'Teléfono de Contacto', type: 'tel', ph: '+56 9 0000 0000' },
   { id: 'correo', label: 'Correo Electrónico', type: 'email', ph: 'operaciones@empresa.cl' },
-  { id: 'ruta', label: 'Tramo / Ruta', type: 'text', ph: 'San Antonio → Santiago' },
+  { id: 'ruta', label: 'Tramo / Ruta', type: 'text', ph: 'Santiago → Antofagasta' },
   { id: 'carga', label: 'Tipo de Carga', type: 'text', ph: 'Carga refrigerada / alto valor' },
 ]
 
 export function ContactSection() {
-  const [sent, setSent] = useState(false)
+  const [sentVia, setSentVia] = useState<'whatsapp' | 'correo' | null>(null)
 
   return (
     <section id="contacto" className="relative scroll-mt-16 py-24 sm:py-32">
@@ -37,6 +53,56 @@ export function ContactSection() {
             Cuéntanos sobre tu operación y un especialista te contactará con un
             plan de seguridad a la medida.
           </p>
+          <p className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 text-gold" />
+            {BUSINESS_ADDRESS}
+          </p>
+
+          {/* El teléfono a la vista: es el WhatsApp de la empresa, el mismo de todos los botones */}
+          {hasWhatsApp && (
+            <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a
+                href={phoneHref}
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-gold/40 hover:text-gold"
+              >
+                <Phone className="h-4 w-4 text-gold" />
+                {phoneDisplay}
+              </a>
+              <a
+                {...leadProps(MESSAGES.expert)}
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-gold/40 hover:text-gold"
+              >
+                <MessageCircle className="h-4 w-4 text-emerald-500" />
+                Escribir por WhatsApp
+              </a>
+              <a
+                href={VCARD_PATH}
+                download={VCARD_FILENAME}
+                className="inline-flex items-center gap-2 rounded-md border border-gold/40 bg-gold/10 px-4 py-2.5 text-sm font-semibold text-gold transition-colors hover:bg-gold/20"
+              >
+                <UserPlus className="h-4 w-4" />
+                Guardar contacto
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div id="cobertura" className="mb-12 scroll-mt-16 text-center">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-gold">Cobertura nacional</p>
+          <p className="mx-auto mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+            Salimos desde nuestras bases en la zona central hacia cualquier punto del país.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2.5">
+            {bases.map((b) => (
+              <span
+                key={b}
+                className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/5 px-3.5 py-1.5 text-xs font-medium text-foreground/90"
+              >
+                <MapPin className="h-3 w-3 text-gold" />
+                {b}
+              </span>
+            ))}
+          </div>
         </div>
 
         <motion.form
@@ -46,7 +112,19 @@ export function ContactSection() {
           transition={{ duration: 0.5 }}
           onSubmit={(e) => {
             e.preventDefault()
-            setSent(true)
+            const f = new FormData(e.currentTarget)
+            const v = (k: string) => String(f.get(k) ?? '').trim()
+            const message = [
+              'Hola SRV Security, quiero una cotización.',
+              '',
+              `Servicio: ${v('servicio')}`,
+              `Empresa: ${v('empresa')}`,
+              `Tramo / ruta: ${v('ruta')}`,
+              `Tipo de carga: ${v('carga')}`,
+              `Teléfono: ${v('telefono')}`,
+              `Correo: ${v('correo')}`,
+            ].join('\n')
+            setSentVia(sendLead(message, `Cotización: ${v('servicio')}`))
           }}
           className="rounded-2xl border border-border bg-card p-6 sm:p-10"
         >
@@ -95,14 +173,16 @@ export function ContactSection() {
             type="submit"
             className="group mt-8 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-6 py-4 font-sans text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:gold-glow"
           >
-            {sent ? (
+            {sentVia ? (
               <>
                 <ShieldCheck className="h-4 w-4" />
-                Solicitud recibida — te contactaremos
+                {sentVia === 'whatsapp'
+                  ? 'Se abrió WhatsApp — envía el mensaje para completar'
+                  : 'Se abrió tu correo — envíalo para completar'}
               </>
             ) : (
               <>
-                Enviar solicitud de cotización
+                {hasWhatsApp ? 'Enviar solicitud por WhatsApp' : 'Enviar solicitud por correo'}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </>
             )}

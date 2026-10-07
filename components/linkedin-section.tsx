@@ -2,10 +2,14 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ThumbsUp, MessageSquare, Share2, Mail } from 'lucide-react'
-import { BopeLogo, LinkedInIcon } from '@/components/brand'
+import { ArrowUpRight, Mail } from 'lucide-react'
+import { SrvLogo, LinkedInIcon } from '@/components/brand'
+import { BUSINESS_EMAIL, LINKEDIN_POST_URL, LINKEDIN_PROFILE_URL, hasLinkedIn } from '@/lib/contact'
 
 export function LinkedInSection() {
+  // Sin perfil nuevo todavía: se oculta en vez de enlazar al LinkedIn de BOPE.
+  if (!hasLinkedIn) return null
+
   return (
     <section className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -28,27 +32,27 @@ export function LinkedInSection() {
               Novedades operativas, protocolos de seguridad y cobertura en ruta
               directamente desde el equipo de{' '}
               <span className="text-foreground">
-                BOPE SECURITY — Asistencia y Monitoreo GPS
+                SRV SECURITY — Asistencia y Monitoreo GPS
               </span>
               .
             </p>
 
             <a
-              href="https://www.linkedin.com"
+              href={LINKEDIN_PROFILE_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-6 py-3.5 font-sans text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all hover:gold-glow"
             >
               <LinkedInIcon className="h-4 w-4" />
-              Ver perfil en LinkedIn
+              Seguirnos en LinkedIn
             </a>
 
             <a
-              href="mailto:Bope.Security@gmail.com"
+              href={`mailto:${BUSINESS_EMAIL}`}
               className="mt-4 flex items-center justify-center gap-2 rounded-md border border-border bg-secondary/40 px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-gold/40 hover:text-gold"
             >
               <Mail className="h-4 w-4 text-gold" />
-              Bope.Security@gmail.com
+              {BUSINESS_EMAIL}
             </a>
           </motion.div>
 
@@ -62,53 +66,48 @@ export function LinkedInSection() {
           >
             <div className="flex items-center gap-3 p-5">
               <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/30 bg-gold/10">
-                <BopeLogo className="h-8 w-auto" />
+                <SrvLogo className="h-8 w-auto" />
               </div>
               <div className="flex-1 leading-tight">
                 <p className="font-sans text-sm font-semibold text-foreground">
-                  BOPE SECURITY — Asistencia y Monitoreo GPS
+                  SRV SECURITY — Asistencia y Monitoreo GPS
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Seguridad Logística
                 </p>
-                <p className="text-xs text-muted-foreground">Ejemplo de publicación</p>
-              </div>
+                              </div>
               <LinkedInIcon className="h-5 w-5 text-[#0a66c2]" />
             </div>
 
             <p className="px-5 pb-4 text-pretty leading-relaxed text-foreground/90">
-              Tu tranquilidad no descansa, nuestro equipo tampoco. Monitoreo GPS
-              y escolta 24/7 en San Antonio — Santiago.
+              Monitoreo GPS, seguridad logística y gestión de flotas: lo que
+              hacemos en la ruta, contado por el equipo.
+            </p>
+            <p className="px-5 pb-4 text-sm text-gold">
+              #MonitoreoGPS #SeguridadLogística #GestiónDeFlotas
             </p>
 
             <div className="relative aspect-[16/9] w-full border-y border-border">
               <Image
-                src="/monitoring-still.png"
-                alt="Captura de cámara de monitoreo de carretera mostrando un camión de carga bajo vigilancia nocturna"
+                src="/monitoring-still.webp"
+                alt="Imagen ilustrativa de un camión de carga de noche en carretera"
                 fill
                 className="object-cover"
               />
               <span className="absolute left-3 top-3 rounded border border-gold/40 bg-background/70 px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-gold backdrop-blur">
-                CAM · RUTA 78
+                Imagen ilustrativa
               </span>
             </div>
 
-            <div className="grid grid-cols-3 border-t border-border">
-              {[
-                { icon: ThumbsUp, label: 'Recomendar' },
-                { icon: MessageSquare, label: 'Comentar' },
-                { icon: Share2, label: 'Compartir' },
-              ].map((a) => (
-                <button
-                  key={a.label}
-                  type="button"
-                  className="flex items-center justify-center gap-2 py-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-gold"
-                >
-                  <a.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{a.label}</span>
-                </button>
-              ))}
-            </div>
+            <a
+              href={LINKEDIN_POST_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 border-t border-border py-3.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:bg-secondary hover:text-gold"
+            >
+              Ver esta publicación
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
           </motion.article>
         </div>
       </div>

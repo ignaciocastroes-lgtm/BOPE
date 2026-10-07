@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { MESSAGES, leadProps } from '@/lib/contact'
 import {
   Copy,
   Check,
@@ -301,7 +302,7 @@ export function ClauseGenerator() {
           </button>
 
           <a
-            href="#contacto-legal"
+            {...leadProps(MESSAGES.legalReview, '/#contacto')}
             className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-semibold uppercase tracking-wide text-foreground transition-colors hover:border-gold/50 hover:text-gold"
           >
             Solicitar revisión jurídica

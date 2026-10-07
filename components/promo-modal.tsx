@@ -7,19 +7,18 @@ import {
   Rocket,
   ShieldAlert,
   FileCode,
-  Lock,
+  Users,
   MessageCircle,
   ArrowRight,
 } from 'lucide-react'
+import { MESSAGES, hasWhatsApp, leadProps } from '@/lib/contact'
 
-const STORAGE_KEY = 'bope-promo-dismissed'
+const STORAGE_KEY = 'srv-promo-dismissed'
 export const OPEN_PROMO_EVENT = 'open-promo-modal'
 
-const WHATSAPP_NUMBER = '56900000000'
-const WHATSAPP_MESSAGE = encodeURIComponent(
-  'Hola BOPE Security, quiero postular a un piloto de flota de BOPE Fleet Ops (Trazabilidad Forense + Hardware Teltonika FMC920).',
-)
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
+// La ventana emergente al cargar la página compite con el gancho del hero y
+// el producto aún no está abierto: solo se abre a pedido (navbar / teaser).
+const AUTO_OPEN = false
 
 const features = [
   {
@@ -33,9 +32,9 @@ const features = [
     text: 'Bitácora de auditoría sin edición ni borrado, para respaldar denuncias y liquidaciones con aseguradoras.',
   },
   {
-    icon: Lock,
-    title: 'Modo Estacionamiento Seguro',
-    text: 'Próximamente: bloqueo de arranque solo con el camión detenido y estacionado. Nunca se inmoviliza un vehículo en marcha.',
+    icon: Users,
+    title: 'Equipo en terreno',
+    text: 'La plataforma no trabaja sola: el equipo SRV está presente en la ruta para coordinar la respuesta cuando algo no cuadra.',
   },
 ]
 
@@ -44,11 +43,11 @@ const forensicLog = [
   '2026-08-25 03:14:07Z  EVT#A91  GEOFENCE_ENTER  ruta=RM-05  lat=-33.4569 lon=-70.6483',
   '2026-08-25 03:14:39Z  EVT#A92  JAMMING_DETECT  4G_LOSS=true  gps_snr=8dB  ALERT>WhatsApp',
   '2026-08-25 03:14:41Z  EVT#A93  HASH  sha256=9f2c…e71a  signed=OK  immutable=true',
-  '2026-08-25 03:15:02Z  EVT#A94  PARK_MODE=ON  starter_inhibit=ENGAGED  unit=TRK-118',
+  '2026-08-25 03:15:02Z  EVT#A94  CHECKIN  driver=OK  unit=TRK-118',
   '2026-08-25 03:15:58Z  EVT#A95  ROUTE_RECONSTRUCT  segments=42  gap_filled=3  conf=0.98',
   '2026-08-25 03:16:20Z  EVT#A96  EXPORT  format=PDF/A  dest=Aseguradora  ley=21.720',
   '2026-08-25 03:17:11Z  EVT#A97  SPEED=0km/h  ign=OFF  perimeter=SECURE  seal=INTACT',
-  '2026-08-25 03:18:04Z  EVT#A98  HANDSHAKE  central=BOPE-OPS  latency=142ms  link=UP',
+  '2026-08-25 03:18:04Z  EVT#A98  HANDSHAKE  central=SRV-OPS  latency=142ms  link=UP',
 ]
 
 export function PromoModal() {
@@ -71,7 +70,7 @@ export function PromoModal() {
     } catch {
       dismissed = false
     }
-    if (dismissed) return
+    if (dismissed || !AUTO_OPEN) return
 
     const timer = window.setTimeout(() => setOpen(true), 4000)
     return () => window.clearTimeout(timer)
@@ -157,19 +156,18 @@ export function PromoModal() {
                   className="mt-4 text-balance font-sans text-2xl font-bold uppercase leading-tight tracking-tight text-foreground sm:text-3xl"
                 >
                   Convertimos el silencio en{' '}
-                  <span className="text-gold">evidencia legal</span> y prevenimos
-                  el robo en reposo
+                  <span className="text-gold">evidencia legal</span>
                 </h2>
 
                 <p className="mt-3 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  Plataforma de Trazabilidad Forense con Hardware Teltonika
-                  FMC920 4G e Inmovilización Segura en Estacionamiento.
+                  Plataforma de trazabilidad forense para flotas de carga, con
+                  equipos Teltonika FMC920 4G.
                 </p>
 
                 {/* Aviso: app en construcción */}
                 <p className="mt-4 rounded-lg border border-amber/30 bg-amber/10 px-4 py-3 text-xs leading-relaxed text-warning-foreground sm:text-sm">
                   <span className="font-semibold text-amber">En construcción.</span>{' '}
-                  BOPE Fleet Ops todavía no tiene portal de acceso. Estamos
+                  SRV Fleet Ops todavía no tiene portal de acceso. Estamos
                   abriendo cupos limitados para flotas piloto.
                 </p>
 
@@ -201,18 +199,16 @@ export function PromoModal() {
                     Kit Corporativo
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-foreground/90">
-                    GPS Teltonika FMC920 (4G Cat-1) + Relé de Inhibición de
-                    Partida (NC) + Segundo Rastreador Oculto (Opcional) + Sellos
-                    Disuasivos.
+                    GPS Teltonika FMC920 (4G Cat-1) + segundo rastreador oculto
+                    (opcional) + sellos disuasivos.
                   </p>
                 </div>
 
                 {/* CTAs */}
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                   <a
-                    href={WHATSAPP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    {...leadProps(MESSAGES.fleetOps)}
+                    onClick={close}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-wide text-background transition-transform hover:scale-[1.02]"
                   >
                     Postular a piloto de flota
@@ -227,15 +223,15 @@ export function PromoModal() {
                 </div>
 
                 {/* WhatsApp quick link */}
-                <a
-                  href={WHATSAPP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground transition-colors hover:text-gold"
-                >
-                  <MessageCircle className="h-4 w-4 text-emerald-500" />
-                  Atención inmediata vía WhatsApp Central
-                </a>
+                {hasWhatsApp && (
+                  <a
+                    {...leadProps(MESSAGES.fleetOps)}
+                    className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-muted-foreground transition-colors hover:text-gold"
+                  >
+                    <MessageCircle className="h-4 w-4 text-emerald-500" />
+                    Escríbenos por WhatsApp
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

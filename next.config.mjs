@@ -6,16 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'bope.cl' }],
-        destination: 'https://www.bope.cl/:path*',
-        permanent: true,
-      },
-    ]
-  },
+  // Sin redirects de dominio por ahora: bope.cl está en disputa y el sitio
+  // usa la URL de Vercel mientras se define un dominio propio nuevo.
 }
 
 export default nextConfig

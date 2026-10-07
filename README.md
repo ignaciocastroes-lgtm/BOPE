@@ -1,4 +1,4 @@
-# bope
+# SRV Security
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
@@ -31,3 +31,31 @@ To learn more, take a look at the following resources:
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 - [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+
+## WhatsApp de la empresa
+
+El número **no está en el código**. Se configura en Vercel:
+
+1. Project → Settings → Environment Variables
+2. `NEXT_PUBLIC_WHATSAPP_NUMBER` = `569XXXXXXXX` (solo dígitos, con código de país)
+3. Volver a desplegar (Next.js incrusta la variable al compilar)
+
+Usa un número de **WhatsApp Business** dedicado a la empresa (no personal). Sin la
+variable, los botones de WhatsApp llevan al formulario y los formularios abren un correo.
+
+## Dominio
+
+El sitio todavía no tiene dominio propio. Mientras tanto, `lib/site.ts` usa la URL
+de Vercel (`https://bope1.vercel.app`). El `bope.cl` anterior quedó fuera del
+código: está en disputa y ya no corresponde a esta marca. Cuando haya un dominio
+nuevo, actualiza `SITE_URL` en `lib/site.ts` (canonical, sitemap, Open Graph y
+robots se arman todos desde ahí).
+
+## Luz verde (salida a producción)
+
+Hasta que el equipo confirme que el sitio está listo, queda **oculto para Google**
+(`noindex` y `robots.txt` bloqueado). Al dar la luz verde:
+
+1. Vercel → Settings → Environment Variables → `NEXT_PUBLIC_SITE_LIVE` = `true`
+2. Conectar el dominio nuevo en Settings → Domains (ver sección "Dominio" arriba)
+3. Volver a desplegar
